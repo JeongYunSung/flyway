@@ -1,0 +1,68 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.flywaydb.gradle.task.FlywayCleanTask
+
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'org.flywaydb.flyway' version '7.9.0'
+}
+
+group = 'com.yunseong'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.flywaydb:flyway-core:7.9.0"
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task migrateDatabase(type: FlywayMigrateTask) {
+    url = 'jdbc:mariadb://localhost:3306/flyway?characterEncoding=UTF-8&serverTimezone=UTC'
+    user = 'root'
+    password = 'my366noy'
+    locations = ['classpath:db/migration']
+}
+
+task cleanDatabase(type: FlywayCleanTask) {
+    url = 'jdbc:mariadb://localhost:3306/flyway?characterEncoding=UTF-8&serverTimezone=UTC'
+    user = 'root'
+    password = 'my366noy'
+    locations = ['classpath:db/migration']
+}
+
+task migrateTestDatabase(type: FlywayMigrateTask) {
+    url = 'jdbc:mariadb://localhost:3306/flyway_test?characterEncoding=UTF-8&serverTimezone=UTC'
+    user = 'root'
+    password = 'my366noy'
+    locations = ['filesystem:src/test/resources/db/migration']
+}
+
+//flyway {
+//    url = 'jdbc:mariadb://localhost:3306/flyway?characterEncoding=UTF-8&serverTimezone=UTC'
+//    user = 'root'
+//    password = 'my366noy'
+//    locations = ['filesystem:src/main/java/db/migration']
+//}
+
